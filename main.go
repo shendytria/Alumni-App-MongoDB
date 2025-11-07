@@ -16,7 +16,9 @@ import (
 // @host localhost:3000
 // @BasePath /api/v1
 // @schemes http
-
+// @securityDefinitions.apikey BearerAuth
+// @in header
+// @name Authorization
 func main() {
 	config.LoadEnv()
 	dbmongo.ConnectMongo()

@@ -31,6 +31,7 @@ func NewAlumniService(r *repository.AlumniRepository) *AlumniService {
 // @Param order query string false "Urutan sorting (asc/desc)"
 // @Success 200 {object} model.AlumniResponse
 // @Failure 500 {object} fiber.Map
+// @Security BearerAuth
 // @Router /alumni [get]
 func (s *AlumniService) GetAll(c *fiber.Ctx) error {
 	page := c.QueryInt("page", 1)
@@ -69,6 +70,7 @@ func (s *AlumniService) GetAll(c *fiber.Ctx) error {
 // @Success 200 {object} model.Alumni
 // @Failure 400 {object} fiber.Map
 // @Failure 404 {object} fiber.Map
+// @Security BearerAuth
 // @Router /alumni/{id} [get]
 func (s *AlumniService) GetByID(c *fiber.Ctx) error {
 	idStr := c.Params("id")
@@ -95,6 +97,7 @@ func (s *AlumniService) GetByID(c *fiber.Ctx) error {
 // @Failure 403 {object} fiber.Map
 // @Failure 404 {object} fiber.Map
 // @Failure 500 {object} fiber.Map
+// @Security BearerAuth
 // @Router /alumni/{id} [delete]
 func (s *AlumniService) Delete(c *fiber.Ctx) error {
 	idStr := c.Params("id")

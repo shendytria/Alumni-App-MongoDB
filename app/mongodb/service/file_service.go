@@ -42,8 +42,8 @@ func NewFileService(repo repository.FileRepository, uploadPath string) FileServi
 // @Failure 403 {object} model.ErrorResponse
 // @Failure 404 {object} model.ErrorResponse
 // @Failure 500 {object} model.ErrorResponse
-// @Router /files/alumni/{alumni_id}/foto [post]
 // @Security BearerAuth
+// @Router /files/alumni/{alumni_id}/foto [post]
 func (s *fileService) UploadFoto(c *fiber.Ctx) error {
 	alumniID := c.Params("alumni_id")
 	role, _ := c.Locals("role").(string)
@@ -127,8 +127,8 @@ func (s *fileService) UploadFoto(c *fiber.Ctx) error {
 // @Failure 403 {object} model.ErrorResponse
 // @Failure 404 {object} model.ErrorResponse
 // @Failure 500 {object} model.ErrorResponse
-// @Router /files/alumni/{alumni_id}/sertifikat [post]
 // @Security BearerAuth
+// @Router /files/alumni/{alumni_id}/sertifikat [post]
 func (s *fileService) UploadSertifikat(c *fiber.Ctx) error {
 	alumniID := c.Params("alumni_id")
 	role, _ := c.Locals("role").(string)
@@ -200,6 +200,7 @@ func (s *fileService) UploadSertifikat(c *fiber.Ctx) error {
 // @Produce json
 // @Success 200 {array} model.File
 // @Failure 500 {object} model.ErrorResponse
+// @Security BearerAuth
 // @Router /files [get]
 func (s *fileService) GetAllFiles(c *fiber.Ctx) error {
 	files, err := s.repo.FindAll()
@@ -219,6 +220,7 @@ func (s *fileService) GetAllFiles(c *fiber.Ctx) error {
 // @Success 200 {object} model.File
 // @Failure 404 {object} model.ErrorResponse
 // @Failure 500 {object} model.ErrorResponse
+// @Security BearerAuth
 // @Router /files/{id} [get]
 func (s *fileService) GetFileByID(c *fiber.Ctx) error {
 	id := c.Params("id")
@@ -239,6 +241,7 @@ func (s *fileService) GetFileByID(c *fiber.Ctx) error {
 // @Success 200 {object} model.FileUploadResponse
 // @Failure 404 {object} model.ErrorResponse
 // @Failure 500 {object} model.ErrorResponse
+// @Security BearerAuth
 // @Router /files/{id} [delete]
 func (s *fileService) DeleteFile(c *fiber.Ctx) error {
 	id := c.Params("id")

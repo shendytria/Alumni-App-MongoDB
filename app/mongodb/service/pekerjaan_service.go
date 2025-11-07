@@ -30,6 +30,7 @@ func NewPekerjaanService(r *repository.PekerjaanRepository) *PekerjaanService {
 // @Param order query string false "Urutan sorting (asc/desc)"
 // @Success 200 {object} model.PekerjaanResponse
 // @Failure 500 {object} fiber.Map
+// @Security BearerAuth
 // @Router /pekerjaan [get]
 func (s *PekerjaanService) GetAll(c *fiber.Ctx) error {
 	page := c.QueryInt("page", 1)
@@ -68,6 +69,7 @@ func (s *PekerjaanService) GetAll(c *fiber.Ctx) error {
 // @Success 200 {object} model.PekerjaanAlumni
 // @Failure 400 {object} fiber.Map
 // @Failure 404 {object} fiber.Map
+// @Security BearerAuth
 // @Router /pekerjaan/{id} [get]
 func (s *PekerjaanService) GetByID(c *fiber.Ctx) error {
 	idStr := c.Params("id")
@@ -111,6 +113,7 @@ func (s *PekerjaanService) GetByAlumniID(c *fiber.Ctx) error {
 // @Failure 403 {object} fiber.Map
 // @Failure 404 {object} fiber.Map
 // @Failure 500 {object} fiber.Map
+// @Security BearerAuth
 // @Router /pekerjaan [post]
 func (s *PekerjaanService) Create(c *fiber.Ctx) error {
 	var req model.CreatePekerjaanRequest
@@ -183,6 +186,7 @@ func (s *PekerjaanService) Create(c *fiber.Ctx) error {
 // @Failure 403 {object} fiber.Map
 // @Failure 404 {object} fiber.Map
 // @Failure 500 {object} fiber.Map
+// @Security BearerAuth
 // @Router /pekerjaan/{id} [put]
 func (s *PekerjaanService) Update(c *fiber.Ctx) error {
 	idStr := c.Params("id")
@@ -260,6 +264,7 @@ func (s *PekerjaanService) Update(c *fiber.Ctx) error {
 // @Failure 403 {object} fiber.Map
 // @Failure 404 {object} fiber.Map
 // @Failure 500 {object} fiber.Map
+// @Security BearerAuth
 // @Router /pekerjaan/{id} [delete]
 func (s *PekerjaanService) Delete(c *fiber.Ctx) error {
 	idStr := c.Params("id")

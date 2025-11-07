@@ -29,7 +29,7 @@ func NewUserService(r *repository.UserRepository) *UserService {
 // @Success 201 {object} model.User
 // @Failure 400 {object} fiber.Map
 // @Failure 500 {object} fiber.Map
-// @Router /users/register [post]
+// @Router /register [post]
 func (s *UserService) Register(c *fiber.Ctx) error {
 	var req model.RegisterRequest
 	if err := c.BodyParser(&req); err != nil {
@@ -76,7 +76,7 @@ func (s *UserService) Register(c *fiber.Ctx) error {
 // @Failure 400 {object} fiber.Map
 // @Failure 401 {object} fiber.Map
 // @Failure 500 {object} fiber.Map
-// @Router /users/login [post]
+// @Router /login [post]
 func (s *UserService) Login(c *fiber.Ctx) error {
 	var req model.LoginRequest
 	if err := c.BodyParser(&req); err != nil {

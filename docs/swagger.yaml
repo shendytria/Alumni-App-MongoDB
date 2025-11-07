@@ -259,6 +259,8 @@ paths:
           description: Internal Server Error
           schema:
             $ref: '#/definitions/fiber.Map'
+      security:
+      - BearerAuth: []
       summary: Dapatkan semua data alumni
       tags:
       - Alumni
@@ -297,6 +299,8 @@ paths:
           description: Internal Server Error
           schema:
             $ref: '#/definitions/fiber.Map'
+      security:
+      - BearerAuth: []
       summary: Hapus data alumni
       tags:
       - Alumni
@@ -325,6 +329,8 @@ paths:
           description: Not Found
           schema:
             $ref: '#/definitions/fiber.Map'
+      security:
+      - BearerAuth: []
       summary: Dapatkan alumni berdasarkan ID
       tags:
       - Alumni
@@ -346,6 +352,8 @@ paths:
           description: Internal Server Error
           schema:
             $ref: '#/definitions/model.ErrorResponse'
+      security:
+      - BearerAuth: []
       summary: Dapatkan semua file yang diunggah
       tags:
       - Files
@@ -375,6 +383,8 @@ paths:
           description: Internal Server Error
           schema:
             $ref: '#/definitions/model.ErrorResponse'
+      security:
+      - BearerAuth: []
       summary: Hapus file berdasarkan ID
       tags:
       - Files
@@ -403,6 +413,8 @@ paths:
           description: Internal Server Error
           schema:
             $ref: '#/definitions/model.ErrorResponse'
+      security:
+      - BearerAuth: []
       summary: Dapatkan file berdasarkan ID
       tags:
       - Files
@@ -495,6 +507,40 @@ paths:
       summary: Upload sertifikat alumni (PDF, max 2MB)
       tags:
       - Files
+  /login:
+    post:
+      consumes:
+      - application/json
+      description: Login dengan username dan password untuk mendapatkan token JWT
+      parameters:
+      - description: Data login user
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/alumni-app_app_mongodb_model.LoginRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/fiber.Map'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/fiber.Map'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/fiber.Map'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/fiber.Map'
+      summary: Login user
+      tags:
+      - Users
   /pekerjaan:
     get:
       consumes:
@@ -532,6 +578,8 @@ paths:
           description: Internal Server Error
           schema:
             $ref: '#/definitions/fiber.Map'
+      security:
+      - BearerAuth: []
       summary: Dapatkan semua data pekerjaan
       tags:
       - Pekerjaan
@@ -569,6 +617,8 @@ paths:
           description: Internal Server Error
           schema:
             $ref: '#/definitions/fiber.Map'
+      security:
+      - BearerAuth: []
       summary: Tambah pekerjaan baru
       tags:
       - Pekerjaan
@@ -607,6 +657,8 @@ paths:
           description: Internal Server Error
           schema:
             $ref: '#/definitions/fiber.Map'
+      security:
+      - BearerAuth: []
       summary: Hapus data pekerjaan (soft delete)
       tags:
       - Pekerjaan
@@ -635,6 +687,8 @@ paths:
           description: Not Found
           schema:
             $ref: '#/definitions/fiber.Map'
+      security:
+      - BearerAuth: []
       summary: Dapatkan pekerjaan berdasarkan ID
       tags:
       - Pekerjaan
@@ -677,44 +731,12 @@ paths:
           description: Internal Server Error
           schema:
             $ref: '#/definitions/fiber.Map'
+      security:
+      - BearerAuth: []
       summary: Perbarui data pekerjaan
       tags:
       - Pekerjaan
-  /users/login:
-    post:
-      consumes:
-      - application/json
-      description: Login dengan username dan password untuk mendapatkan token JWT
-      parameters:
-      - description: Data login user
-        in: body
-        name: body
-        required: true
-        schema:
-          $ref: '#/definitions/alumni-app_app_mongodb_model.LoginRequest'
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/fiber.Map'
-        "400":
-          description: Bad Request
-          schema:
-            $ref: '#/definitions/fiber.Map'
-        "401":
-          description: Unauthorized
-          schema:
-            $ref: '#/definitions/fiber.Map'
-        "500":
-          description: Internal Server Error
-          schema:
-            $ref: '#/definitions/fiber.Map'
-      summary: Login user
-      tags:
-      - Users
-  /users/register:
+  /register:
     post:
       consumes:
       - application/json
@@ -746,4 +768,9 @@ paths:
       - Users
 schemes:
 - http
+securityDefinitions:
+  BearerAuth:
+    in: header
+    name: Authorization
+    type: apiKey
 swagger: "2.0"

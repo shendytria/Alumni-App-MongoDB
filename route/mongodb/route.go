@@ -15,7 +15,7 @@ func RegisterRoutes(
 	userService *svc.UserService,
 	fileService svc.FileService,
 ) {
-	api := app.Group("/api")
+	api := app.Group("/api/v1")
 
 	// ====================== AUTH ROUTES ======================
 	api.Post("/login", userService.Login)

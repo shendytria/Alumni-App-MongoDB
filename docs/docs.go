@@ -17,6 +17,11 @@ const docTemplate = `{
     "paths": {
         "/alumni": {
             "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
                 "description": "Mengambil daftar semua alumni dari database (dengan pagination, pencarian, dan sorting)",
                 "consumes": [
                     "application/json"
@@ -78,6 +83,11 @@ const docTemplate = `{
         },
         "/alumni/{id}": {
             "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
                 "description": "Mengambil data alumni berdasarkan ID",
                 "consumes": [
                     "application/json"
@@ -120,6 +130,11 @@ const docTemplate = `{
                 }
             },
             "delete": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
                 "description": "Menghapus (soft delete) data alumni berdasarkan ID, hanya admin atau pemilik data yang diizinkan",
                 "consumes": [
                     "application/json"
@@ -176,6 +191,11 @@ const docTemplate = `{
         },
         "/files": {
             "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
                 "description": "Mengambil daftar seluruh file dari database",
                 "consumes": [
                     "application/json"
@@ -344,6 +364,11 @@ const docTemplate = `{
         },
         "/files/{id}": {
             "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
                 "description": "Mengambil metadata file dari database berdasarkan ID",
                 "consumes": [
                     "application/json"
@@ -386,6 +411,11 @@ const docTemplate = `{
                 }
             },
             "delete": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
                 "description": "Menghapus file dari sistem dan database",
                 "consumes": [
                     "application/json"
@@ -428,8 +458,65 @@ const docTemplate = `{
                 }
             }
         },
+        "/login": {
+            "post": {
+                "description": "Login dengan username dan password untuk mendapatkan token JWT",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Users"
+                ],
+                "summary": "Login user",
+                "parameters": [
+                    {
+                        "description": "Data login user",
+                        "name": "body",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/alumni-app_app_mongodb_model.LoginRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/fiber.Map"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/fiber.Map"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/fiber.Map"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/fiber.Map"
+                        }
+                    }
+                }
+            }
+        },
         "/pekerjaan": {
             "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
                 "description": "Mengambil daftar semua pekerjaan alumni dengan pagination dan filter",
                 "consumes": [
                     "application/json"
@@ -489,6 +576,11 @@ const docTemplate = `{
                 }
             },
             "post": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
                 "description": "Menambahkan data pekerjaan baru untuk alumni tertentu",
                 "consumes": [
                     "application/json"
@@ -547,6 +639,11 @@ const docTemplate = `{
         },
         "/pekerjaan/{id}": {
             "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
                 "description": "Mengambil detail pekerjaan berdasarkan ID",
                 "consumes": [
                     "application/json"
@@ -589,6 +686,11 @@ const docTemplate = `{
                 }
             },
             "put": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
                 "description": "Memperbarui data pekerjaan berdasarkan ID",
                 "consumes": [
                     "application/json"
@@ -652,6 +754,11 @@ const docTemplate = `{
                 }
             },
             "delete": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
                 "description": "Menghapus pekerjaan berdasarkan ID (hanya admin atau pemilik data yang diizinkan)",
                 "consumes": [
                     "application/json"
@@ -706,59 +813,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/users/login": {
-            "post": {
-                "description": "Login dengan username dan password untuk mendapatkan token JWT",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Users"
-                ],
-                "summary": "Login user",
-                "parameters": [
-                    {
-                        "description": "Data login user",
-                        "name": "body",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/alumni-app_app_mongodb_model.LoginRequest"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/fiber.Map"
-                        }
-                    },
-                    "400": {
-                        "description": "Bad Request",
-                        "schema": {
-                            "$ref": "#/definitions/fiber.Map"
-                        }
-                    },
-                    "401": {
-                        "description": "Unauthorized",
-                        "schema": {
-                            "$ref": "#/definitions/fiber.Map"
-                        }
-                    },
-                    "500": {
-                        "description": "Internal Server Error",
-                        "schema": {
-                            "$ref": "#/definitions/fiber.Map"
-                        }
-                    }
-                }
-            }
-        },
-        "/users/register": {
+        "/register": {
             "post": {
                 "description": "Membuat akun user baru dengan username, email, dan password terenkripsi",
                 "consumes": [
@@ -1130,6 +1185,13 @@ const docTemplate = `{
                     "example": true
                 }
             }
+        }
+    },
+    "securityDefinitions": {
+        "BearerAuth": {
+            "type": "apiKey",
+            "name": "Authorization",
+            "in": "header"
         }
     }
 }`
