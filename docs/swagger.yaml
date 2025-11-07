@@ -1,0 +1,749 @@
+basePath: /api/v1
+definitions:
+  alumni-app_app_mongodb_model.Alumni:
+    properties:
+      alamat:
+        type: string
+      angkatan:
+        type: integer
+      created_at:
+        type: string
+      deleted_at:
+        type: string
+      email:
+        type: string
+      foto:
+        type: string
+      id:
+        type: string
+      jurusan:
+        type: string
+      nama:
+        type: string
+      nim:
+        type: string
+      no_telepon:
+        type: string
+      sertifikat_path:
+        type: string
+      tahun_lulus:
+        type: integer
+      updated_at:
+        type: string
+      user_id:
+        type: string
+    type: object
+  alumni-app_app_mongodb_model.AlumniResponse:
+    properties:
+      data:
+        items:
+          $ref: '#/definitions/alumni-app_app_mongodb_model.Alumni'
+        type: array
+      meta:
+        $ref: '#/definitions/alumni-app_app_mongodb_model.MetaInfo'
+    type: object
+  alumni-app_app_mongodb_model.CreatePekerjaanRequest:
+    properties:
+      alumni_id:
+        type: string
+      bidang_industri:
+        type: string
+      deskripsi_pekerjaan:
+        type: string
+      gaji_range:
+        type: integer
+      lokasi_kerja:
+        type: string
+      nama_perusahaan:
+        type: string
+      posisi_jabatan:
+        type: string
+      status_pekerjaan:
+        type: string
+      tanggal_mulai_kerja:
+        type: string
+      tanggal_selesai_kerja:
+        type: string
+    type: object
+  alumni-app_app_mongodb_model.LoginRequest:
+    properties:
+      password:
+        type: string
+      username:
+        type: string
+    type: object
+  alumni-app_app_mongodb_model.MetaInfo:
+    properties:
+      limit:
+        type: integer
+      order:
+        type: string
+      page:
+        type: integer
+      pages:
+        type: integer
+      search:
+        type: string
+      sortBy:
+        type: string
+      total:
+        type: integer
+    type: object
+  alumni-app_app_mongodb_model.PekerjaanAlumni:
+    properties:
+      alumni_id:
+        type: string
+      bidang_industri:
+        type: string
+      created_at:
+        type: string
+      deleted_at:
+        type: string
+      deskripsi_pekerjaan:
+        type: string
+      gaji_range:
+        type: integer
+      id:
+        type: string
+      lokasi_kerja:
+        type: string
+      nama_perusahaan:
+        type: string
+      posisi_jabatan:
+        type: string
+      status_pekerjaan:
+        type: string
+      tanggal_mulai_kerja:
+        type: string
+      tanggal_selesai_kerja:
+        type: string
+      updated_at:
+        type: string
+    type: object
+  alumni-app_app_mongodb_model.PekerjaanResponse:
+    properties:
+      data:
+        items:
+          $ref: '#/definitions/alumni-app_app_mongodb_model.PekerjaanAlumni'
+        type: array
+      meta:
+        $ref: '#/definitions/alumni-app_app_mongodb_model.MetaInfo'
+    type: object
+  alumni-app_app_mongodb_model.RegisterRequest:
+    properties:
+      email:
+        type: string
+      password:
+        type: string
+      role:
+        type: string
+      username:
+        type: string
+    type: object
+  alumni-app_app_mongodb_model.UpdatePekerjaanRequest:
+    properties:
+      bidang_industri:
+        type: string
+      deskripsi_pekerjaan:
+        type: string
+      gaji_range:
+        type: integer
+      lokasi_kerja:
+        type: string
+      nama_perusahaan:
+        type: string
+      posisi_jabatan:
+        type: string
+      status_pekerjaan:
+        type: string
+      tanggal_mulai_kerja:
+        type: string
+      tanggal_selesai_kerja:
+        type: string
+    type: object
+  alumni-app_app_mongodb_model.User:
+    properties:
+      created_at:
+        type: string
+      email:
+        type: string
+      id:
+        type: string
+      password_hash:
+        type: string
+      role:
+        type: string
+      username:
+        type: string
+    type: object
+  fiber.Map:
+    additionalProperties: true
+    type: object
+  model.ErrorResponse:
+    properties:
+      error:
+        example: Pesan kesalahan
+        type: string
+    type: object
+  model.File:
+    properties:
+      file_name:
+        type: string
+      file_path:
+        type: string
+      file_size:
+        type: integer
+      file_type:
+        type: string
+      id:
+        type: string
+      original_name:
+        type: string
+      uploaded_at:
+        type: string
+    type: object
+  model.FileUploadResponse:
+    properties:
+      message:
+        example: File uploaded successfully
+        type: string
+      path:
+        example: /uploads/foto/FOTO_12345_uuid.png
+        type: string
+      success:
+        example: true
+        type: boolean
+    type: object
+host: localhost:3000
+info:
+  contact: {}
+  description: API untuk mengelola data user dengan MongoDB menggunakan Clean Architecture
+  title: Alumni-App API
+  version: "1.0"
+paths:
+  /alumni:
+    get:
+      consumes:
+      - application/json
+      description: Mengambil daftar semua alumni dari database (dengan pagination,
+        pencarian, dan sorting)
+      parameters:
+      - description: Halaman saat ini
+        in: query
+        name: page
+        type: integer
+      - description: Jumlah data per halaman
+        in: query
+        name: limit
+        type: integer
+      - description: Kata kunci pencarian
+        in: query
+        name: search
+        type: string
+      - description: Kolom untuk sorting
+        in: query
+        name: sortBy
+        type: string
+      - description: Urutan sorting (asc/desc)
+        in: query
+        name: order
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/alumni-app_app_mongodb_model.AlumniResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/fiber.Map'
+      summary: Dapatkan semua data alumni
+      tags:
+      - Alumni
+  /alumni/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: Menghapus (soft delete) data alumni berdasarkan ID, hanya admin
+        atau pemilik data yang diizinkan
+      parameters:
+      - description: ID Alumni
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/fiber.Map'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/fiber.Map'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/fiber.Map'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/fiber.Map'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/fiber.Map'
+      summary: Hapus data alumni
+      tags:
+      - Alumni
+    get:
+      consumes:
+      - application/json
+      description: Mengambil data alumni berdasarkan ID
+      parameters:
+      - description: ID Alumni
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/alumni-app_app_mongodb_model.Alumni'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/fiber.Map'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/fiber.Map'
+      summary: Dapatkan alumni berdasarkan ID
+      tags:
+      - Alumni
+  /files:
+    get:
+      consumes:
+      - application/json
+      description: Mengambil daftar seluruh file dari database
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/model.File'
+            type: array
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/model.ErrorResponse'
+      summary: Dapatkan semua file yang diunggah
+      tags:
+      - Files
+  /files/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: Menghapus file dari sistem dan database
+      parameters:
+      - description: File ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/model.FileUploadResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/model.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/model.ErrorResponse'
+      summary: Hapus file berdasarkan ID
+      tags:
+      - Files
+    get:
+      consumes:
+      - application/json
+      description: Mengambil metadata file dari database berdasarkan ID
+      parameters:
+      - description: File ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/model.File'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/model.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/model.ErrorResponse'
+      summary: Dapatkan file berdasarkan ID
+      tags:
+      - Files
+  /files/alumni/{alumni_id}/foto:
+    post:
+      consumes:
+      - multipart/form-data
+      description: Hanya admin atau pemilik data yang boleh upload foto ke profil
+        alumni
+      parameters:
+      - description: ID Alumni
+        in: path
+        name: alumni_id
+        required: true
+        type: string
+      - description: File foto (jpg/png, max 1MB)
+        in: formData
+        name: file
+        required: true
+        type: file
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/model.File'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/model.ErrorResponse'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/model.ErrorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/model.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/model.ErrorResponse'
+      security:
+      - BearerAuth: []
+      summary: Upload foto alumni (JPG/PNG, max 1MB)
+      tags:
+      - Files
+  /files/alumni/{alumni_id}/sertifikat:
+    post:
+      consumes:
+      - multipart/form-data
+      description: Hanya admin atau pemilik data yang boleh upload sertifikat
+      parameters:
+      - description: ID Alumni
+        in: path
+        name: alumni_id
+        required: true
+        type: string
+      - description: File sertifikat (PDF, max 2MB)
+        in: formData
+        name: file
+        required: true
+        type: file
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/model.File'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/model.ErrorResponse'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/model.ErrorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/model.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/model.ErrorResponse'
+      security:
+      - BearerAuth: []
+      summary: Upload sertifikat alumni (PDF, max 2MB)
+      tags:
+      - Files
+  /pekerjaan:
+    get:
+      consumes:
+      - application/json
+      description: Mengambil daftar semua pekerjaan alumni dengan pagination dan filter
+      parameters:
+      - description: Halaman saat ini
+        in: query
+        name: page
+        type: integer
+      - description: Jumlah data per halaman
+        in: query
+        name: limit
+        type: integer
+      - description: Kata kunci pencarian
+        in: query
+        name: search
+        type: string
+      - description: Kolom untuk sorting
+        in: query
+        name: sortBy
+        type: string
+      - description: Urutan sorting (asc/desc)
+        in: query
+        name: order
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/alumni-app_app_mongodb_model.PekerjaanResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/fiber.Map'
+      summary: Dapatkan semua data pekerjaan
+      tags:
+      - Pekerjaan
+    post:
+      consumes:
+      - application/json
+      description: Menambahkan data pekerjaan baru untuk alumni tertentu
+      parameters:
+      - description: Data pekerjaan baru
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/alumni-app_app_mongodb_model.CreatePekerjaanRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/alumni-app_app_mongodb_model.PekerjaanAlumni'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/fiber.Map'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/fiber.Map'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/fiber.Map'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/fiber.Map'
+      summary: Tambah pekerjaan baru
+      tags:
+      - Pekerjaan
+  /pekerjaan/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: Menghapus pekerjaan berdasarkan ID (hanya admin atau pemilik data
+        yang diizinkan)
+      parameters:
+      - description: ID Pekerjaan
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/fiber.Map'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/fiber.Map'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/fiber.Map'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/fiber.Map'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/fiber.Map'
+      summary: Hapus data pekerjaan (soft delete)
+      tags:
+      - Pekerjaan
+    get:
+      consumes:
+      - application/json
+      description: Mengambil detail pekerjaan berdasarkan ID
+      parameters:
+      - description: ID Pekerjaan
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/alumni-app_app_mongodb_model.PekerjaanAlumni'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/fiber.Map'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/fiber.Map'
+      summary: Dapatkan pekerjaan berdasarkan ID
+      tags:
+      - Pekerjaan
+    put:
+      consumes:
+      - application/json
+      description: Memperbarui data pekerjaan berdasarkan ID
+      parameters:
+      - description: ID Pekerjaan
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: Data pekerjaan baru
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/alumni-app_app_mongodb_model.UpdatePekerjaanRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/fiber.Map'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/fiber.Map'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/fiber.Map'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/fiber.Map'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/fiber.Map'
+      summary: Perbarui data pekerjaan
+      tags:
+      - Pekerjaan
+  /users/login:
+    post:
+      consumes:
+      - application/json
+      description: Login dengan username dan password untuk mendapatkan token JWT
+      parameters:
+      - description: Data login user
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/alumni-app_app_mongodb_model.LoginRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/fiber.Map'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/fiber.Map'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/fiber.Map'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/fiber.Map'
+      summary: Login user
+      tags:
+      - Users
+  /users/register:
+    post:
+      consumes:
+      - application/json
+      description: Membuat akun user baru dengan username, email, dan password terenkripsi
+      parameters:
+      - description: Data user baru
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/alumni-app_app_mongodb_model.RegisterRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/alumni-app_app_mongodb_model.User'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/fiber.Map'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/fiber.Map'
+      summary: Registrasi user baru
+      tags:
+      - Users
+schemes:
+- http
+swagger: "2.0"
