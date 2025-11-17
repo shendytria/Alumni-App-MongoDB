@@ -11,10 +11,10 @@ import (
 )
 
 type AlumniService struct {
-	repo *repository.AlumniRepository
+	repo repository.AlumniRepositoryInterface
 }
 
-func NewAlumniService(r *repository.AlumniRepository) *AlumniService {
+func NewAlumniService(r repository.AlumniRepositoryInterface) *AlumniService {
 	return &AlumniService{repo: r}
 }
 

@@ -2,19 +2,34 @@ package repository
 
 import (
 	"alumni-app/app/mongodb/model"
-	"alumni-app/database/mongodb"
 	"context"
 	"time"
 
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
+	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
-type AlumniRepository struct{}
+type AlumniRepositoryInterface interface {
+	GetAll(search string, sortBy string, order string, page, limit int) ([]model.Alumni, error)
+	Count(search string) (int64, error)
+	GetByID(id primitive.ObjectID) (model.Alumni, error)
+	GetByUserID(userID primitive.ObjectID) (model.Alumni, error)
+	Create(a *model.Alumni) error
+	Update(id primitive.ObjectID, a *model.Alumni) error
+	SoftDelete(id primitive.ObjectID) error
+	GetAllByUserID(userID primitive.ObjectID) ([]model.Alumni, error)
+}
 
-func NewAlumniRepository() *AlumniRepository {
-	return &AlumniRepository{}
+type AlumniRepository struct{
+	Col *mongo.Collection
+}
+
+func NewAlumniRepository(db *mongo.Database) AlumniRepositoryInterface {
+	return &AlumniRepository{
+		Col: db.Collection("alumni"),
+	}
 }
 
 func (r *AlumniRepository) GetAll(search string, sortBy string, order string, page, limit int) ([]model.Alumni, error) {
@@ -41,7 +56,7 @@ func (r *AlumniRepository) GetAll(search string, sortBy string, order string, pa
 		SetSkip(int64((page - 1) * limit)).
 		SetLimit(int64(limit))
 
-	cur, err := database.DB.Collection("alumni").Find(ctx, filter, opts)
+	cur, err := r.Col.Find(ctx, filter, opts)
 	if err != nil {
 		return nil, err
 	}
@@ -67,7 +82,7 @@ func (r *AlumniRepository) Count(search string) (int64, error) {
 	}
 	filter["$and"] = []bson.M{{"deleted_at": bson.M{"$exists": false}}}
 
-	return database.DB.Collection("alumni").CountDocuments(ctx, filter)
+	return r.Col.CountDocuments(ctx, filter)
 }
 
 func (r *AlumniRepository) GetByID(id primitive.ObjectID) (model.Alumni, error) {
@@ -75,9 +90,7 @@ func (r *AlumniRepository) GetByID(id primitive.ObjectID) (model.Alumni, error) 
 	defer cancel()
 
 	var a model.Alumni
-	err := database.DB.Collection("alumni").
-		FindOne(ctx, bson.M{"_id": id, "deleted_at": bson.M{"$exists": false}}).
-		Decode(&a)
+	err := r.Col.FindOne(ctx, bson.M{"_id": id, "deleted_at": bson.M{"$exists": false}}).Decode(&a)
 	return a, err
 }
 
@@ -86,9 +99,7 @@ func (r *AlumniRepository) GetByUserID(userID primitive.ObjectID) (model.Alumni,
 	defer cancel()
 
 	var a model.Alumni
-	err := database.DB.Collection("alumni").
-		FindOne(ctx, bson.M{"user_id": userID, "deleted_at": bson.M{"$exists": false}}).
-		Decode(&a)
+	err := r.Col.FindOne(ctx, bson.M{"user_id": userID, "deleted_at": bson.M{"$exists": false}}).Decode(&a)
 	return a, err
 }
 
@@ -101,7 +112,7 @@ func (r *AlumniRepository) Create(a *model.Alumni) error {
 	a.CreatedAt = now
 	a.UpdatedAt = now
 
-	_, err := database.DB.Collection("alumni").InsertOne(ctx, a)
+	_, err := r.Col.InsertOne(ctx, a)
 	return err
 }
 
@@ -112,7 +123,7 @@ func (r *AlumniRepository) Update(id primitive.ObjectID, a *model.Alumni) error 
 	a.UpdatedAt = time.Now()
 	update := bson.M{"$set": a}
 
-	_, err := database.DB.Collection("alumni").UpdateOne(ctx, bson.M{"_id": id}, update)
+	_, err := r.Col.UpdateOne(ctx, bson.M{"_id": id}, update)
 	return err
 }
 
@@ -120,10 +131,9 @@ func (r *AlumniRepository) SoftDelete(id primitive.ObjectID) error {
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
 
-	now := time.Now()
-	update := bson.M{"$set": bson.M{"deleted_at": now}}
-
-	_, err := database.DB.Collection("alumni").UpdateOne(ctx, bson.M{"_id": id}, update)
+	_, err := r.Col.UpdateOne(ctx, bson.M{"_id": id}, bson.M{"$set": bson.M{
+		"deleted_at": time.Now(),
+	}})
 	return err
 }
 
@@ -131,7 +141,7 @@ func (r *AlumniRepository) GetAllByUserID(userID primitive.ObjectID) ([]model.Al
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
 
-	cur, err := database.DB.Collection("alumni").Find(ctx, bson.M{"user_id": userID})
+	cur, err := r.Col.Find(ctx, bson.M{"user_id": userID})
 	if err != nil {
 		return nil, err
 	}

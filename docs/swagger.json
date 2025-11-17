@@ -223,7 +223,7 @@
                 }
             }
         },
-        "/files/alumni/{alumni_id}/foto": {
+        "/files/upload-foto/{alumni_id}": {
             "post": {
                 "security": [
                     {
@@ -291,7 +291,7 @@
                 }
             }
         },
-        "/files/alumni/{alumni_id}/sertifikat": {
+        "/files/upload-sertifikat/{alumni_id}": {
             "post": {
                 "security": [
                     {

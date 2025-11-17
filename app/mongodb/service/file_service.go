@@ -22,11 +22,20 @@ type FileService interface {
 
 type fileService struct {
 	repo       repository.FileRepository
+	alumniRepo repository.AlumniRepositoryInterface
 	uploadPath string
 }
 
-func NewFileService(repo repository.FileRepository, uploadPath string) FileService {
-	return &fileService{repo: repo, uploadPath: uploadPath}
+func NewFileService(
+	fileRepo repository.FileRepository,
+	alumniRepo repository.AlumniRepositoryInterface,
+	uploadPath string,
+) FileService {
+	return &fileService{
+		repo:       fileRepo,
+		alumniRepo: alumniRepo,
+		uploadPath: uploadPath,
+	}
 }
 
 // UploadFoto godoc
@@ -35,6 +44,7 @@ func NewFileService(repo repository.FileRepository, uploadPath string) FileServi
 // @Tags Files
 // @Accept multipart/form-data
 // @Produce json
+// @Consumes multipart/form-data
 // @Param alumni_id path string true "ID Alumni"
 // @Param file formData file true "File foto (jpg/png, max 1MB)"
 // @Success 200 {object} model.File
@@ -43,7 +53,7 @@ func NewFileService(repo repository.FileRepository, uploadPath string) FileServi
 // @Failure 404 {object} model.ErrorResponse
 // @Failure 500 {object} model.ErrorResponse
 // @Security BearerAuth
-// @Router /files/alumni/{alumni_id}/foto [post]
+// @Router /files/upload-foto/{alumni_id} [post]
 func (s *fileService) UploadFoto(c *fiber.Ctx) error {
 	alumniID := c.Params("alumni_id")
 	role, _ := c.Locals("role").(string)
@@ -51,8 +61,7 @@ func (s *fileService) UploadFoto(c *fiber.Ctx) error {
 
 	// Role check: user hanya bisa upload miliknya sendiri
 	if role != "admin" {
-		alumniRepo := repository.NewAlumniRepository()
-		alumnis, err := alumniRepo.GetAllByUserID(userID)
+		alumnis, err := s.alumniRepo.GetAllByUserID(userID)
 		if err != nil {
 			return c.Status(500).JSON(fiber.Map{"error": "Failed to check ownership"})
 		}
@@ -120,6 +129,7 @@ func (s *fileService) UploadFoto(c *fiber.Ctx) error {
 // @Tags Files
 // @Accept multipart/form-data
 // @Produce json
+// @Consumes multipart/form-data
 // @Param alumni_id path string true "ID Alumni"
 // @Param file formData file true "File sertifikat (PDF, max 2MB)"
 // @Success 200 {object} model.File
@@ -128,15 +138,14 @@ func (s *fileService) UploadFoto(c *fiber.Ctx) error {
 // @Failure 404 {object} model.ErrorResponse
 // @Failure 500 {object} model.ErrorResponse
 // @Security BearerAuth
-// @Router /files/alumni/{alumni_id}/sertifikat [post]
+// @Router /files/upload-sertifikat/{alumni_id} [post]
 func (s *fileService) UploadSertifikat(c *fiber.Ctx) error {
 	alumniID := c.Params("alumni_id")
 	role, _ := c.Locals("role").(string)
 	userID, _ := c.Locals("user_id").(primitive.ObjectID)
 
 	if role != "admin" {
-		alumniRepo := repository.NewAlumniRepository()
-		alumnis, err := alumniRepo.GetAllByUserID(userID)
+		alumnis, err := s.alumniRepo.GetAllByUserID(userID)
 		if err != nil {
 			return c.Status(500).JSON(fiber.Map{"error": "Failed to check ownership"})
 		}

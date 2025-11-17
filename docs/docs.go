@@ -226,7 +226,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/files/alumni/{alumni_id}/foto": {
+        "/files/upload-foto/{alumni_id}": {
             "post": {
                 "security": [
                     {
@@ -294,7 +294,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/files/alumni/{alumni_id}/sertifikat": {
+        "/files/upload-sertifikat/{alumni_id}": {
             "post": {
                 "security": [
                     {

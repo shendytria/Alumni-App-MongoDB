@@ -10,11 +10,15 @@ import (
 )
 
 type PekerjaanService struct {
-	repo *repository.PekerjaanRepository
+	repo       repository.PekerjaanRepositoryInterface
+	alumniRepo repository.AlumniRepositoryInterface
 }
 
-func NewPekerjaanService(r *repository.PekerjaanRepository) *PekerjaanService {
-	return &PekerjaanService{repo: r}
+func NewPekerjaanService(
+	r repository.PekerjaanRepositoryInterface,
+	a repository.AlumniRepositoryInterface,
+) *PekerjaanService {
+	return &PekerjaanService{repo: r, alumniRepo: a}
 }
 
 // GetAll godoc
@@ -125,13 +129,12 @@ func (s *PekerjaanService) Create(c *fiber.Ctx) error {
 	userID, _ := c.Locals("user_id").(primitive.ObjectID)
 
 	if role != "admin" {
-		alumniRepo := repository.NewAlumniRepository()
-		alumni, err := alumniRepo.GetByID(req.AlumniID)
+		alumni, err := s.alumniRepo.GetByID(req.AlumniID)
 		if err != nil {
 			return c.Status(404).JSON(fiber.Map{"error": "Alumni tidak ditemukan"})
 		}
 		if alumni.UserID != userID {
-			return c.Status(403).JSON(fiber.Map{"error": "Tidak diizinkan menambah pekerjaan milik orang lain"})
+			return c.Status(403).JSON(fiber.Map{"error": "Tidak diizinkan"})
 		}
 	}
 
@@ -204,13 +207,12 @@ func (s *PekerjaanService) Update(c *fiber.Ctx) error {
 	}
 
 	if role != "admin" {
-		alumniRepo := repository.NewAlumniRepository()
-		alumni, err := alumniRepo.GetByID(existing.AlumniID)
+		alumni, err := s.alumniRepo.GetByID(existing.AlumniID)
 		if err != nil {
-			return c.Status(404).JSON(fiber.Map{"error": "Data alumni tidak ditemukan"})
+			return c.Status(404).JSON(fiber.Map{"error": "Alumni tidak ditemukan"})
 		}
 		if alumni.UserID != userID {
-			return c.Status(403).JSON(fiber.Map{"error": "Tidak diizinkan mengubah pekerjaan milik orang lain"})
+			return c.Status(403).JSON(fiber.Map{"error": "Tidak diizinkan"})
 		}
 	}
 
@@ -282,13 +284,12 @@ func (s *PekerjaanService) Delete(c *fiber.Ctx) error {
 	}
 
 	if role != "admin" {
-		alumniRepo := repository.NewAlumniRepository()
-		alumni, err := alumniRepo.GetByID(existing.AlumniID)
+		alumni, err := s.alumniRepo.GetByID(existing.AlumniID)
 		if err != nil {
-			return c.Status(500).JSON(fiber.Map{"error": "Gagal validasi data alumni"})
+			return c.Status(500).JSON(fiber.Map{"error": "Validasi gagal"})
 		}
 		if alumni.UserID != userID {
-			return c.Status(403).JSON(fiber.Map{"error": "Tidak diizinkan menghapus pekerjaan milik orang lain"})
+			return c.Status(403).JSON(fiber.Map{"error": "Tidak diizinkan"})
 		}
 	}
 
@@ -314,13 +315,12 @@ func (s *PekerjaanService) Restore(c *fiber.Ctx) error {
 	}
 
 	if role != "admin" {
-		alumniRepo := repository.NewAlumniRepository()
-		alumni, err := alumniRepo.GetByID(existing.AlumniID)
+		alumni, err := s.alumniRepo.GetByID(existing.AlumniID)
 		if err != nil {
 			return c.Status(404).JSON(fiber.Map{"error": "Alumni tidak ditemukan"})
 		}
 		if alumni.UserID != userID {
-			return c.Status(403).JSON(fiber.Map{"error": "Tidak diizinkan merestore pekerjaan milik orang lain"})
+			return c.Status(403).JSON(fiber.Map{"error": "Tidak diizinkan"})
 		}
 	}
 
@@ -346,13 +346,12 @@ func (s *PekerjaanService) HardDelete(c *fiber.Ctx) error {
 	}
 
 	if role != "admin" {
-		alumniRepo := repository.NewAlumniRepository()
-		alumni, err := alumniRepo.GetByID(existing.AlumniID)
+		alumni, err := s.alumniRepo.GetByID(existing.AlumniID)
 		if err != nil {
 			return c.Status(404).JSON(fiber.Map{"error": "Alumni tidak ditemukan"})
 		}
 		if alumni.UserID != userID {
-			return c.Status(403).JSON(fiber.Map{"error": "Tidak diizinkan menghapus permanen pekerjaan milik orang lain"})
+			return c.Status(403).JSON(fiber.Map{"error": "Tidak diizinkan"})
 		}
 	}
 
@@ -378,10 +377,9 @@ func (s *PekerjaanService) GetTrashed(c *fiber.Ctx) error {
 	}
 
 	userID, _ := c.Locals("user_id").(primitive.ObjectID)
-	alumniRepo := repository.NewAlumniRepository()
 
 	// Ambil semua alumni milik user ini
-	alumnis, err := alumniRepo.GetAllByUserID(userID)
+	alumnis, err := s.alumniRepo.GetAllByUserID(userID)
 	if err != nil || len(alumnis) == 0 {
 		return c.Status(404).JSON(fiber.Map{"error": "Alumni untuk user ini tidak ditemukan"})
 	}

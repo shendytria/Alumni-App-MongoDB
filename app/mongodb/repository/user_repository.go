@@ -2,7 +2,6 @@ package repository
 
 import (
 	"alumni-app/app/mongodb/model"
-	"alumni-app/database/mongodb"
 	"context"
 	"time"
 
@@ -10,10 +9,20 @@ import (
 	"go.mongodb.org/mongo-driver/mongo"
 )
 
-type UserRepository struct{}
+type UserRepositoryInterface interface {
+	GetByUsername(username string) (model.User, error)
+	GetByID(id interface{}) (model.User, error)
+	Create(user *model.User) error
+}
 
-func NewUserRepository() *UserRepository {
-	return &UserRepository{}
+type UserRepository struct {
+	Col *mongo.Collection
+}
+
+func NewUserRepository(db *mongo.Database) UserRepositoryInterface {
+	return &UserRepository{
+		Col: db.Collection("users"),
+	}
 }
 
 func (r *UserRepository) GetByUsername(username string) (model.User, error) {
@@ -21,10 +30,7 @@ func (r *UserRepository) GetByUsername(username string) (model.User, error) {
 	defer cancel()
 
 	var user model.User
-	err := database.DB.Collection("users").FindOne(ctx, bson.M{"username": username}).Decode(&user)
-	if err == mongo.ErrNoDocuments {
-		return model.User{}, err
-	}
+	err := r.Col.FindOne(ctx, bson.M{"username": username}).Decode(&user)
 	return user, err
 }
 
@@ -33,7 +39,7 @@ func (r *UserRepository) GetByID(id interface{}) (model.User, error) {
 	defer cancel()
 
 	var user model.User
-	err := database.DB.Collection("users").FindOne(ctx, bson.M{"_id": id}).Decode(&user)
+	err := r.Col.FindOne(ctx, bson.M{"_id": id}).Decode(&user)
 	return user, err
 }
 
@@ -42,6 +48,6 @@ func (r *UserRepository) Create(user *model.User) error {
 	defer cancel()
 
 	user.CreatedAt = time.Now()
-	_, err := database.DB.Collection("users").InsertOne(ctx, user)
+	_, err := r.Col.InsertOne(ctx, user)
 	return err
 }

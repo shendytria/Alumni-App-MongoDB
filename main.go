@@ -26,18 +26,17 @@ func main() {
 	app := config.NewApp()
 
 	// repositories
-	userRepo := repo.NewUserRepository()
-	alumniRepo := repo.NewAlumniRepository()
-	pekerjaanRepo := repo.NewPekerjaanRepository()
-
+	userRepo := repo.NewUserRepository(dbmongo.DB)
+	alumniRepo := repo.NewAlumniRepository(dbmongo.DB)
+	pekerjaanRepo := repo.NewPekerjaanRepository(dbmongo.DB)
 	// file repo needs the DB handle; ensure dbmongo.DB is exported: var DB *mongo.Database
 	fileRepo := repo.NewFileRepository(dbmongo.DB)
 
 	// services
 	userService := svc.NewUserService(userRepo)
 	alumniService := svc.NewAlumniService(alumniRepo)
-	pekerjaanService := svc.NewPekerjaanService(pekerjaanRepo)
-	fileService := svc.NewFileService(fileRepo, "./uploads")
+	pekerjaanService := svc.NewPekerjaanService(pekerjaanRepo, alumniRepo)
+	fileService := svc.NewFileService(fileRepo, alumniRepo, "./uploads")
 
 	// static files
 	app.Static("/uploads", "./uploads")
